@@ -119,18 +119,6 @@ BEGIN
                         else
                             lastServedDevice<= "101";
                         END IF;
-                    when "000" =>
-                        if SFD = '1' then
-                            lastServedDevice<= "001";
-                        elsif SRD = '1' then
-                            lastServedDevice<= "010";
-                        elsif SW = '1' then
-                            lastServedDevice<= "011";
-                        elsif SFA = '1' then
-                            lastServedDevice<= "100";
-                        elsif tempAbnormal = '1' then
-                            lastServedDevice<= "101";
-                        end if;
                     when others => lastServedDevice <= "000";
                 end case;
                 if lastServedDevice = "001" then
@@ -171,9 +159,9 @@ BEGIN
                 end if; 
                 if lastServedDevice /= "101" then
                     display <=  lastServedDevice;
-                elsif tempTooLow = '1' then
+                elsif tempTooLow = "1" then
                     display <= "101"  ;
-                elsif tempTooHigh = '1' then
+                elsif tempTooHigh = "1" then
                     display <= "110" ;
                 END IF;     
             END IF;
