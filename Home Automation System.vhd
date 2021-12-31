@@ -8,14 +8,13 @@ ENTITY Control_Unit IS
 		clk, Rst, SFD,SRD,SW,SFA : IN STD_LOGIC;
         ST : IN STD_LOGIC_VECTOR(6 DOWNTO 0);
 		fdoor,rdoor,winbuzz,alarambuzz,heater,cooler : OUT STD_LOGIC :='0';
-        display : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+        display : OUT STD_LOGIC_VECTOR(2 DOWNTO 0):="000"
 	);
 END Control_Unit;
 
 ARCHITECTURE Control_Unit OF Control_Unit IS
 	
-    signal tempTooHigh,tempTooLow,tempAbnormal,singleRequest,noRequest,Temp : std_logic; ---inputs init
-    
+    signal tempTooHigh,tempTooLow,tempAbnormal,singleRequest,noRequest,Temp : std_logic; ---inputs init    
     SIGNAL lastServedDevice : STD_LOGIC_VECTOR(2 DOWNTO 0) := "000";
     SIGNAL Sensors : STD_LOGIC_VECTOR(4 DOWNTO 0);
     
@@ -33,6 +32,25 @@ BEGIN
 	PROCESS (clk,Rst) IS
 	BEGIN
         IF rising_edge(clk) THEN
+            fdoor <= '0';
+            rdoor <= '0';
+            winbuzz <= '0';
+            alarambuzz <= '0';
+            cooler <= '0';
+            heater <= '0';
+            if lastServedDevice = "000" then
+                if SRD = '1' then
+                    lastServedDevice<= "010";
+                elsif SFA = '1' then
+                    lastServedDevice<= "011";
+                elsif SW = '1' then
+                    lastServedDevice<= "100";
+                elsif tempAbnormal = '1' then
+                    lastServedDevice<= "101"; 
+                else 
+                    lastServedDevice<= "001";
+                End if;
+            End if;
             IF Rst = '1' then
                 lastServedDevice <= (others =>'0');
             ELSIF singleRequest = '1' or noRequest = '1' THEN
@@ -135,46 +153,22 @@ BEGIN
                 end case;
                 if lastServedDevice = "001" then
                     fdoor <= '1';
-                    rdoor <= '0';
-                    winbuzz <= '0';
-                    alarambuzz <= '0';
-                    cooler <= '0';
-                    heater <= '0';
-                elsif lastServedDevice = "010" then
-                    fdoor <= '0';
-                    rdoor <= '1';
-                    winbuzz <= '0';
-                    alarambuzz <= '0';
-                    cooler <= '0';
-                    heater <= '0';
-                elsif lastServedDevice = "011" then
-                    fdoor <= '0';
-                    rdoor <= '0';
-                    winbuzz <= '0';
-                    alarambuzz <= '1';
-                    cooler <= '0';
-                    heater <= '0';
-                elsif lastServedDevice = "100" then
-                    fdoor <= '0';
-                    rdoor <= '0';
-                    winbuzz <= '1';
-                    alarambuzz <= '0';
-                    cooler <= '0';
-                    heater <= '0';
-                elsif lastServedDevice = "101" then
-                    fdoor <= '0';
-                    rdoor <= '0';
-                    winbuzz <= '0';
-                    alarambuzz <= '0';
-                    cooler <= tempTooHigh;
-                    heater <= tempTooLow;
-                end if; 
+                    elsif lastServedDevice = "010" then
+                        rdoor <= '1';
+                    elsif lastServedDevice = "011" then
+                        alarambuzz <= '1';
+                    elsif lastServedDevice = "100" then
+                        winbuzz <= '1';
+                    elsif lastServedDevice = "101" then
+                        cooler <= tempTooHigh;
+                        heater <= tempTooLow;
+                END if; 
                 if lastServedDevice /= "101" then
                     display <=  lastServedDevice;
-                elsif tempTooLow = '1' then
-                    display <= "101"  ;
-                elsif tempTooHigh = '1' then
-                    display <= "110" ;
+                    elsif tempTooLow = '1' then
+                        display <= "101"  ;
+                    elsif tempTooHigh = '1' then
+                        display <= "110" ;
                 END IF;     
             END IF;
 		END IF;
