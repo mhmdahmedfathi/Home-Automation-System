@@ -14,14 +14,14 @@ add wave -position end  sim:/control_unit/alarambuzz
 add wave -position end  sim:/control_unit/heater
 add wave -position end  sim:/control_unit/cooler
 force -freeze sim:/control_unit/clk 0 0, 1 {50 ps} -r 100
-force -freeze sim:/control_unit/Rst 0 0
+force -freeze sim:/control_unit/Rst 1 0
 force -freeze sim:/control_unit/ST 0111100 0
 force -freeze sim:/control_unit/SFA 0 0
 force -freeze sim:/control_unit/SFD 0 0
 force -freeze sim:/control_unit/SRD 0 0
 force -freeze sim:/control_unit/SW 0 0
 run
-run
+force -freeze sim:/control_unit/Rst 0 0
 run
 force -freeze sim:/control_unit/SFA 1 0
 run

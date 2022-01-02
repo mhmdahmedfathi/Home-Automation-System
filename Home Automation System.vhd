@@ -29,7 +29,7 @@ BEGIN
 
     noRequest <= '1' when (Sensors = "00000") else '0';
 
-	PROCESS (clk,Rst) IS
+	PROCESS (clk) IS
 	BEGIN
         IF rising_edge(clk) THEN
             fdoor <= '0';
@@ -53,6 +53,7 @@ BEGIN
             End if;
             IF Rst = '1' then
                 lastServedDevice <= (others =>'0');
+                display <=  "000";
             ELSIF singleRequest = '1' or noRequest = '1' THEN
                 if noRequest = '1' then
                     display <= "000";
