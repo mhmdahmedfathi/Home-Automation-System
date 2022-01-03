@@ -1,3 +1,7 @@
+work/
 
 vsim.wlf
-work/*
+
+*.bak
+*.mpf
+*.mti
